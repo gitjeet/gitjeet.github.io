@@ -16,7 +16,7 @@ timezone: Asia/Kolkata
 
 title: Abhijeet's Blog # the main title
 
-tagline: Systems, code, and lessons learned the hard way.
+tagline: Systems, production code, AI/ML and lessons learned the hard way.
 
 vdescription: >- # used by seo meta and the atom feed
   Lessons from building real systems in Go, Rust, C# and Python, plus AI and game dev experiments, by Abhijeet Singh.
