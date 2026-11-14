@@ -5,18 +5,13 @@ categories: [Backend, API Design]
 tags: [protobuf, protocol-buffers, rest-api, performance, python, mobile-games]
 ---
 
-
-
-
 # Your API Is Too Heavy for Low-Bandwidth Users
-
-
 
 Your server is fast. Your code is clean. Your tests pass. And yet a user on a shaky connection is staring at a loading spinner and slowly losing the will to live.
 
-The problem isn't your server. It's that you're mailing a sofa when you could be mailing a postcard.\
+The problem isn't your server. It's that you're mailing a sofa when you could be mailing a postcard.
 
-![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/d32e0df3-7f25-4562-ab66-bce10753a20f.png align="center")
+![Mailing a sofa vs a postcard](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/d32e0df3-7f25-4562-ab66-bce10753a20f.png)
 
 This post covers why that happens, how to fix it, and runnable code to prove it, so you can win arguments in code review.
 
@@ -26,7 +21,7 @@ This post covers why that happens, how to fix it, and runnable code to prove it,
 
 Files, networks, databases: they all speak bytes. Turning your data into bytes is called **encoding**, and the format you pick decides how big, how fast, and how painful life gets. There are three families, and they get progressively less embarrassing.
 
-![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/4ae74d4c-fb32-408f-aba3-3ec540aa6986.png align="center")
+![Three families of encoding](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/4ae74d4c-fb32-408f-aba3-3ec540aa6986.png)
 
 ### Family 1: Language-specific formats (a.k.a. "it worked on my machine")
 
@@ -37,7 +32,7 @@ Java has `Serializable`. Python has `pickle`. Ruby has `Marshal`. They're built 
 - **Versioning pain.** Change your class and old data may explode.
 - **Meh efficiency.** Java's built-in serialization is famously slow and bloated.
 
-  ![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/700f145e-9926-40db-a361-ac3a4f07e656.png align="center")
+![Language-specific formats](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/700f145e-9926-40db-a361-ac3a4f07e656.png)
 
 Use these for short-lived, in-process stuff only. Not for anything you'd want to read next Tuesday.
 
@@ -50,7 +45,7 @@ Human-readable, supported everywhere, and the reason half the internet works. Bu
 - **JSON** knows strings from numbers, but the spec has just one "number" type, so ints and floats are the same to it. Also, integers above 2⁵³ quietly lose precision in JavaScript. Your user ID may be someone else's user ID. Fun!
 - All three repeat every field name in every record and write numbers as text. `"player_id"` is typed out in full, every single time, like a politician repeating a slogan.
 
-  ![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/5510976d-859b-4ffb-ab37-70821a33f6e8.png align="center")
+![JSON, XML and CSV](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/5510976d-859b-4ffb-ab37-70821a33f6e8.png)
 
 For small data this is fine. At terabyte scale, or on a slow network, it hurts.
 
@@ -60,7 +55,7 @@ If the data is used inside your organization, or bandwidth and latency matter, y
 
 You write a schema, a code generator makes classes for Python, Go, Java, C#, and more, and your app just calls the generated code to encode and decode. Same schema, every language. Data written in one is readable in all.
 
-![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/4539f57b-b5e3-499e-92ac-f6e882e2d1b8.png align="center")
+![Protocol Buffers workflow](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/4539f57b-b5e3-499e-92ac-f6e882e2d1b8.png)
 
 ---
 
@@ -159,7 +154,7 @@ The real output, run on my machine, not made up for dramatic effect:
 
 That's about **78% smaller** than JSON.
 
-![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/9d5d19c9-6fd3-4da4-8a2e-70e869d76a20.png align="center")
+![Size comparison chart](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/9d5d19c9-6fd3-4da4-8a2e-70e869d76a20.png)
 
 A fair warning, since I like being trusted: in production our average was **~60%**, not 78%. Real payloads have more strings, and strings don't shrink as much as numbers. Your mileage will vary. Measure your own endpoints.
 
@@ -276,7 +271,7 @@ The `.proto` file acts as the contract for reading and writing the blob, and fie
 
 **Important plot twist:** the schema is *not* a database index. If you want to filter or sort by something, keep it in a normal indexed column (like `player_id` and `level` above) and let the rest live in the blob. Don't try to `WHERE` your way into a binary blob. That's how you end up on a forum at 2 a.m.
 
-![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/1f97174d-9cca-41f7-9c28-8067b4d7fc24.png align="center")
+![Protobuf blobs in a database](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/1f97174d-9cca-41f7-9c28-8067b4d7fc24.png)
 
 ---
 
@@ -291,7 +286,7 @@ Where it helps in a game:
 - **Real-time state:** send positions and actions in tight binary messages.
 - **Offline-first caching:** keep the last known state on-device as Protobuf, saving disk and load time.
 
-  ![](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/57cb22b1-be5c-4884-9655-ee73aa86aa3b.png align="center")
+![Protobuf in mobile games](https://cdn.hashnode.com/uploads/covers/6ae1ac48aeab3c99f717886e/57cb22b1-be5c-4884-9655-ee73aa86aa3b.png)
 
 ---
 
